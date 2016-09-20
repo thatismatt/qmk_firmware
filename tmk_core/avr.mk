@@ -106,6 +106,10 @@ flip: $(BUILD_DIR)/$(TARGET).hex
 	batchisp -hardware usb -device $(MCU) -operation loadbuffer $(BUILD_DIR)/$(TARGET).hex program
 	batchisp -hardware usb -device $(MCU) -operation start reset 0
 
+avrdude: $(BUILD_DIR)/$(TARGET).hex
+	while [ ! -r $(AVRDUDE_PORT) ]; do sleep 1; done; \
+	avrdude -c $(AVRDUDE_PROGRAMMER) -P $(AVRDUDE_PORT) -p $(MCU) -U flash:w:$(BUILD_DIR)/$(TARGET).hex
+
 dfu: $(BUILD_DIR)/$(TARGET).hex sizeafter
 	until dfu-programmer $(MCU) get bootloader-version; do\
 		echo "Error: Bootloader not found. Trying again in 5s." ;\
